@@ -1,56 +1,37 @@
-import React, { forwardRef } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+
+import { primaryButtonStyles, type PrimaryButtonThemeMode } from '../styles/theme';
 
 export interface PrimaryButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  children: React.ReactNode;
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+  children: ReactNode;
   ariaLabel?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   iconPosition?: 'left' | 'right';
   isLoading?: boolean;
+  loadingLabel?: string;
   fullWidthOnMobile?: boolean;
-  themeMode?: 'light' | 'dark' | 'system';
+  themeMode?: PrimaryButtonThemeMode;
 }
 
-const baseClasses =
-  'relative inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500';
-
-const sizeClasses =
-  'min-h-[2.75rem] px-4 py-2 text-sm sm:min-h-[3rem] sm:px-5 sm:text-base lg:min-h-[3.25rem] lg:px-6';
-
-const lightThemeClasses =
-  'bg-sky-600 text-white shadow-sm hover:bg-sky-500 active:bg-sky-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none';
-
-const darkThemeClasses =
-  'bg-sky-500 text-slate-950 shadow-sm hover:bg-sky-400 active:bg-sky-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400 disabled:shadow-none';
-
-const systemThemeClasses =
-  'bg-sky-600 text-white shadow-sm hover:bg-sky-500 active:bg-sky-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400 dark:active:bg-sky-300 dark:focus-visible:ring-offset-slate-950 dark:disabled:bg-slate-700 dark:disabled:text-slate-400';
-
-const widthClasses = 'w-full sm:w-auto';
-const contentHiddenWhenLoading = 'text-transparent';
+const cx = (...classes: Array<string | false | null | undefined>) =>
+  classes.filter(Boolean).join(' ');
 
 const Spinner = () => (
   <svg
-    className="h-4 w-4 animate-spin sm:h-5 sm:w-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
     aria-hidden="true"
+    className="h-4 w-4 animate-spin sm:h-5 sm:w-5"
+    fill="none"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
   >
-    <circle
-      className="opacity-25"
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      strokeWidth="4"
-    />
+    <circle cx="12" cy="12" r="10" className="opacity-25" stroke="currentColor" strokeWidth="4" />
     <path
       className="opacity-90"
       d="M22 12a10 10 0 0 0-10-10"
       stroke="currentColor"
-      strokeWidth="4"
       strokeLinecap="round"
+      strokeWidth="4"
     />
   </svg>
 );
@@ -60,12 +41,13 @@ export const PrimaryButton = forwardRef<HTMLButtonElement, PrimaryButtonProps>(
     {
       ariaLabel,
       children,
-      className = '',
+      className,
       disabled = false,
       fullWidthOnMobile = true,
       icon,
       iconPosition = 'left',
       isLoading = false,
+      loadingLabel = 'Loading',
       themeMode = 'system',
       type = 'button',
       ...buttonProps
@@ -73,55 +55,47 @@ export const PrimaryButton = forwardRef<HTMLButtonElement, PrimaryButtonProps>(
     ref,
   ) => {
     const isDisabled = disabled || isLoading;
-    const themeClasses =
-      themeMode === 'dark'
-        ? darkThemeClasses
-        : themeMode === 'light'
-          ? lightThemeClasses
-          : systemThemeClasses;
-
-    const content = (
-      <>
-        {icon && iconPosition === 'left' ? <span aria-hidden="true">{icon}</span> : null}
-        <span>{children}</span>
-        {icon && iconPosition === 'right' ? <span aria-hidden="true">{icon}</span> : null}
-      </>
-    );
+    const themeClasses = primaryButtonStyles.theme[themeMode];
 
     return (
       <button
         {...buttonProps}
         ref={ref}
-        type={type}
-        aria-label={ariaLabel}
         aria-busy={isLoading || undefined}
-        className={[
-          baseClasses,
-          sizeClasses,
-          themeClasses,
-          fullWidthOnMobile ? widthClasses : '',
-          isLoading ? contentHiddenWhenLoading : '',
-          className,
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        aria-disabled={isDisabled || undefined}
+        aria-label={ariaLabel}
+        data-theme-mode={themeMode}
         disabled={isDisabled}
+        type={type}
+        className={cx(
+          primaryButtonStyles.base,
+          primaryButtonStyles.responsive,
+          themeClasses,
+          !fullWidthOnMobile && 'w-auto',
+          className,
+        )}
       >
         {isLoading ? (
-          <span className="absolute inset-0 flex items-center justify-center gap-2 text-current">
+          <span className={primaryButtonStyles.spinnerOverlay}>
             <Spinner />
-            <span className="sr-only">Loading</span>
+            <span aria-live="polite" className="sr-only">
+              {loadingLabel}
+            </span>
           </span>
         ) : null}
-        <span
-          className={[
-            'inline-flex items-center justify-center gap-2',
-            isLoading ? 'invisible' : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          {content}
+
+        <span className={cx(primaryButtonStyles.content, isLoading && primaryButtonStyles.loadingContent)}>
+          {icon && iconPosition === 'left' ? (
+            <span aria-hidden="true" className={primaryButtonStyles.icon}>
+              {icon}
+            </span>
+          ) : null}
+          <span>{children}</span>
+          {icon && iconPosition === 'right' ? (
+            <span aria-hidden="true" className={primaryButtonStyles.icon}>
+              {icon}
+            </span>
+          ) : null}
         </span>
       </button>
     );

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { PrimaryButton } from './PrimaryButton';
@@ -5,7 +6,8 @@ import { PrimaryButton } from './PrimaryButton';
 const ArrowIcon = () => (
   <svg
     aria-hidden="true"
-    className="h-4 w-4"
+    width="16"
+    height="16"
     fill="none"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
@@ -84,34 +86,58 @@ export const DarkMode: Story = {
     icon: <ArrowIcon />,
     themeMode: 'dark',
   },
+
   parameters: {
     backgrounds: {
-      default: 'dark',
-      values: [{ name: 'dark', value: '#020617' }],
+      options: {
+        dark: { name: 'dark', value: '#020617' }
+      }
     },
   },
+
+  globals: {
+    backgrounds: {
+      value: "dark"
+    }
+  }
+};
+
+const panelStyle: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.5rem',
+  borderRadius: '0.75rem',
+  border: '1px solid #e2e8f0',
+  padding: '1rem',
+};
+
+const labelStyle: CSSProperties = {
+  margin: 0,
+  fontSize: '0.875rem',
+  fontWeight: 500,
+  color: '#475569',
 };
 
 export const ResponsiveShowcase: Story = {
   render: (args) => (
-    <div className="flex w-full max-w-5xl flex-col gap-4">
-      <div className="space-y-2 rounded-xl border border-slate-200 p-4">
-        <p className="text-sm font-medium text-slate-600">Mobile layout</p>
-        <div className="max-w-xs">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '64rem' }}>
+      <div style={panelStyle}>
+        <p style={labelStyle}>Mobile layout</p>
+        <div style={{ maxWidth: '20rem' }}>
           <PrimaryButton {...args}>Continue on mobile</PrimaryButton>
         </div>
       </div>
-      <div className="space-y-2 rounded-xl border border-slate-200 p-4">
-        <p className="text-sm font-medium text-slate-600">Tablet layout</p>
-        <div className="max-w-md">
+      <div style={panelStyle}>
+        <p style={labelStyle}>Tablet layout</p>
+        <div style={{ maxWidth: '28rem' }}>
           <PrimaryButton {...args} icon={<ArrowIcon />}>
             Continue on tablet
           </PrimaryButton>
         </div>
       </div>
-      <div className="space-y-2 rounded-xl border border-slate-200 p-4">
-        <p className="text-sm font-medium text-slate-600">Desktop layout</p>
-        <div className="max-w-2xl">
+      <div style={panelStyle}>
+        <p style={labelStyle}>Desktop layout</p>
+        <div style={{ maxWidth: '42rem' }}>
           <PrimaryButton {...args} fullWidthOnMobile={false} icon={<ArrowIcon />} iconPosition="right">
             Continue on desktop
           </PrimaryButton>

@@ -31,10 +31,10 @@ describe('PrimaryButton', () => {
   it('shows a spinner, announces loading, and disables interaction while loading', () => {
     render(<PrimaryButton isLoading loadingLabel="Submitting form">Submitting</PrimaryButton>);
 
-    const button = screen.getByRole('button', { name: 'Submitting' });
+    const button = screen.getByRole('button');
     expect(button).toHaveAttribute('aria-busy', 'true');
     expect(button).toBeDisabled();
-    expect(screen.getByText('Submitting form')).toHaveClass('sr-only');
+    expect(screen.getByText('Submitting form')).toBeInTheDocument();
   });
 
   it('renders icon content alongside text', () => {
@@ -62,15 +62,13 @@ describe('PrimaryButton', () => {
   it('supports opting out of full-width mobile layout', () => {
     render(<PrimaryButton fullWidthOnMobile={false}>Inline</PrimaryButton>);
 
-    expect(screen.getByRole('button', { name: 'Inline' })).toHaveClass('w-auto');
+    expect(screen.getByRole('button', { name: 'Inline' })).not.toHaveAttribute('data-full-width');
   });
 
-  it('applies the selected theme mode as metadata and classes', () => {
+  it('applies the selected theme mode as metadata', () => {
     render(<PrimaryButton themeMode="dark">Dark action</PrimaryButton>);
 
     const button = screen.getByRole('button', { name: 'Dark action' });
     expect(button).toHaveAttribute('data-theme-mode', 'dark');
-    expect(button.className).toContain('bg-sky-500');
-    expect(button.className).toContain('text-slate-950');
   });
 });

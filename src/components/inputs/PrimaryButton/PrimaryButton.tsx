@@ -1,6 +1,15 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 
-import { primaryButtonStyles, type PrimaryButtonThemeMode } from '../styles/theme';
+import {
+  Content,
+  IconWrapper,
+  SpinnerOverlay,
+  SpinnerSvg,
+  StyledButton,
+  VisuallyHidden,
+  type PrimaryButtonThemeMode,
+  type PrimaryButtonVariant,
+} from './PrimaryButton.styles';
 
 export interface PrimaryButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
@@ -12,28 +21,27 @@ export interface PrimaryButtonProps
   loadingLabel?: string;
   fullWidthOnMobile?: boolean;
   themeMode?: PrimaryButtonThemeMode;
+  variant?: PrimaryButtonVariant;
 }
 
-const cx = (...classes: Array<string | false | null | undefined>) =>
-  classes.filter(Boolean).join(' ');
-
 const Spinner = () => (
-  <svg
-    aria-hidden="true"
-    className="h-4 w-4 animate-spin sm:h-5 sm:w-5"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <circle cx="12" cy="12" r="10" className="opacity-25" stroke="currentColor" strokeWidth="4" />
+  <SpinnerSvg aria-hidden="true" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <circle
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
+      style={{ opacity: 0.25 }}
+    />
     <path
-      className="opacity-90"
       d="M22 12a10 10 0 0 0-10-10"
       stroke="currentColor"
       strokeLinecap="round"
       strokeWidth="4"
+      style={{ opacity: 0.9 }}
     />
-  </svg>
+  </SpinnerSvg>
 );
 
 export const PrimaryButton = forwardRef<HTMLButtonElement, PrimaryButtonProps>(
@@ -49,55 +57,48 @@ export const PrimaryButton = forwardRef<HTMLButtonElement, PrimaryButtonProps>(
       isLoading = false,
       loadingLabel = 'Loading',
       themeMode = 'system',
+      variant = 'primary',
       type = 'button',
       ...buttonProps
     },
     ref,
   ) => {
     const isDisabled = disabled || isLoading;
-    const themeClasses = primaryButtonStyles.theme[themeMode];
 
     return (
-      <button
+      <StyledButton
         {...buttonProps}
         ref={ref}
+        className={className}
         aria-busy={isLoading || undefined}
         aria-disabled={isDisabled || undefined}
         aria-label={ariaLabel}
         data-theme-mode={themeMode}
+        data-variant={variant}
+        data-full-width={fullWidthOnMobile || undefined}
         disabled={isDisabled}
         type={type}
-        className={cx(
-          primaryButtonStyles.base,
-          primaryButtonStyles.responsive,
-          themeClasses,
-          !fullWidthOnMobile && 'w-auto',
-          className,
-        )}
+        $themeMode={themeMode}
+        $variant={variant}
+        $fullWidthOnMobile={fullWidthOnMobile}
       >
         {isLoading ? (
-          <span className={primaryButtonStyles.spinnerOverlay}>
+          <SpinnerOverlay>
             <Spinner />
-            <span aria-live="polite" className="sr-only">
-              {loadingLabel}
-            </span>
-          </span>
+            <VisuallyHidden aria-live="polite">{loadingLabel}</VisuallyHidden>
+          </SpinnerOverlay>
         ) : null}
 
-        <span className={cx(primaryButtonStyles.content, isLoading && primaryButtonStyles.loadingContent)}>
+        <Content $loading={isLoading}>
           {icon && iconPosition === 'left' ? (
-            <span aria-hidden="true" className={primaryButtonStyles.icon}>
-              {icon}
-            </span>
+            <IconWrapper aria-hidden="true">{icon}</IconWrapper>
           ) : null}
           <span>{children}</span>
           {icon && iconPosition === 'right' ? (
-            <span aria-hidden="true" className={primaryButtonStyles.icon}>
-              {icon}
-            </span>
+            <IconWrapper aria-hidden="true">{icon}</IconWrapper>
           ) : null}
-        </span>
-      </button>
+        </Content>
+      </StyledButton>
     );
   },
 );

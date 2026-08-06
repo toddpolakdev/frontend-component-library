@@ -11,14 +11,19 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      default: 'light',
-      values: [
-        { name: 'light', value: '#f8fafc' },
-        { name: 'dark', value: '#020617' },
-      ],
+      options: {
+        light: { name: 'light', value: '#f8fafc' },
+        dark: { name: 'dark', value: '#020617' }
+      }
     },
     layout: 'centered',
   },
+
+  initialGlobals: {
+    backgrounds: {
+      value: 'light'
+    }
+  }
 };
 
 export default preview;

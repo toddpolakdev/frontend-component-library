@@ -14,6 +14,11 @@ export interface SelectFieldProps {
   options: SelectOption[];
   required?: boolean;
   error?: string;
+  /**
+   * Keep the label for assistive tech but drop it from the layout — for selects
+   * whose purpose is obvious from context, such as a sort control in a toolbar.
+   */
+  hideLabel?: boolean;
   onChange: (value: string) => void;
 }
 
@@ -24,11 +29,12 @@ export function SelectField({
   options,
   required = false,
   error,
+  hideLabel = false,
   onChange,
 }: SelectFieldProps) {
   return (
     <Field>
-      <Label htmlFor={id}>
+      <Label htmlFor={id} $visuallyHidden={hideLabel}>
         {label}
         {required && <RequiredMark> *</RequiredMark>}
       </Label>

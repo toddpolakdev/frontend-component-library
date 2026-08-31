@@ -2,4 +2,8 @@ export * from './PrimaryButton';
 export * from './FormField';
 export * from './SelectField';
 export * from './SearchField';
+export * from './OptionTile';
+export * from './Quantity';
+export * from './ThumbnailPicker';
+export * from './Switch';
 export * from './ThemeToggle';

@@ -6,9 +6,30 @@ export const Field = styled.div`
   gap: 8px;
 `;
 
-export const Label = styled.label`
+/**
+ * `$visuallyHidden` keeps the label in the accessibility tree while taking it out
+ * of the layout — for selects that read clearly from context, like a sort control
+ * in a toolbar. It is never simply omitted: a select with no label has no
+ * accessible name at all, which is the state the source's DropdownSelect shipped
+ * in.
+ */
+export const Label = styled.label<{ $visuallyHidden?: boolean }>`
   color: var(--app-text);
   font-weight: 700;
+
+  ${({ $visuallyHidden }) =>
+    $visuallyHidden &&
+    `
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    `}
 `;
 
 export const RequiredMark = styled.span`

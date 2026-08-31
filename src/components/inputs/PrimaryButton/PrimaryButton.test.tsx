@@ -71,4 +71,58 @@ describe('PrimaryButton', () => {
     const button = screen.getByRole('button', { name: 'Dark action' });
     expect(button).toHaveAttribute('data-theme-mode', 'dark');
   });
+
+  // Folded in from the source library's separate Button component, per the
+  // one-button rule: variants live here rather than in a second component.
+  it('supports the naked variant for inline text actions', () => {
+    render(<PrimaryButton variant="naked">Edit</PrimaryButton>);
+
+    expect(screen.getByRole('button', { name: 'Edit' })).toHaveAttribute(
+      'data-variant',
+      'naked',
+    );
+  });
+
+  it('supports a slim size', () => {
+    const { rerender } = render(<PrimaryButton>Default</PrimaryButton>);
+    expect(screen.getByRole('button')).toHaveAttribute('data-size', 'default');
+
+    rerender(<PrimaryButton size="slim">Slim</PrimaryButton>);
+    expect(screen.getByRole('button')).toHaveAttribute('data-size', 'slim');
+  });
+
+  it('is not announced as a toggle unless it is one', () => {
+    render(<PrimaryButton>Save</PrimaryButton>);
+
+    expect(screen.getByRole('button', { name: 'Save' })).not.toHaveAttribute('aria-pressed');
+  });
+
+  it('reports the pressed state of a toggle button', () => {
+    const { rerender } = render(<PrimaryButton active={false}>Grid view</PrimaryButton>);
+    expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'false');
+
+    rerender(<PrimaryButton active>Grid view</PrimaryButton>);
+    expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('can render as a link', () => {
+    render(
+      <PrimaryButton as="a" href="/checkout">
+        Checkout
+      </PrimaryButton>,
+    );
+
+    const link = screen.getByRole('link', { name: 'Checkout' });
+    expect(link.tagName).toBe('A');
+    expect(link).toHaveAttribute('href', '/checkout');
+    // Neither attribute is valid on an anchor.
+    expect(link).not.toHaveAttribute('type');
+    expect(link).not.toHaveAttribute('disabled');
+  });
+
+  it('still disables a real button', () => {
+    render(<PrimaryButton disabled>Save</PrimaryButton>);
+
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+  });
 });

@@ -30,6 +30,23 @@ describe('SelectField', () => {
     expect(onChange).toHaveBeenCalledWith('Lead');
   });
 
+  it('keeps the accessible name when the label is visually hidden', () => {
+    // Covers the case the source's DropdownSelect handled by shipping no label
+    // at all, leaving the select with no accessible name.
+    render(
+      <SelectField
+        id="sort"
+        label="Sort by"
+        value="Client"
+        options={options}
+        hideLabel
+        onChange={() => {}}
+      />,
+    );
+
+    expect(screen.getByRole('combobox', { name: 'Sort by' })).toBeInTheDocument();
+  });
+
   it('exposes accessible error wiring', () => {
     render(
       <SelectField

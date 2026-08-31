@@ -1,7 +1,8 @@
 import styled, { css, keyframes } from 'styled-components';
 
 export type PrimaryButtonThemeMode = 'light' | 'dark' | 'system';
-export type PrimaryButtonVariant = 'primary' | 'secondary' | 'danger';
+export type PrimaryButtonVariant = 'primary' | 'secondary' | 'danger' | 'naked';
+export type PrimaryButtonSize = 'default' | 'slim';
 
 const palette = {
   sky300: '#7dd3fc',
@@ -118,9 +119,70 @@ const dangerVariant = css`
   }
 `;
 
+/**
+ * The source library's `naked` variant: a text button with no chrome, for
+ * inline actions that shouldn't look like a filled control. Its `ghost` variant
+ * isn't carried over — `secondary` already covers the bordered-light case.
+ */
+const nakedVariant = css`
+  background-color: transparent;
+  color: inherit;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  min-height: 0;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover:not(:disabled) {
+    background-color: transparent;
+    text-decoration: none;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--app-primary);
+    outline-offset: 2px;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--app-muted);
+    text-decoration: none;
+  }
+
+  /* Undoes the responsive sizing above, which a text button shouldn't carry. */
+  @media (min-width: 640px) {
+    padding: 0;
+    min-height: 0;
+  }
+  @media (min-width: 1024px) {
+    padding: 0;
+    min-height: 0;
+  }
+`;
+
+/** The source's `slim`: shorter, and not upper-cased. */
+const slimSize = css`
+  padding: 0.25rem 0.75rem;
+  min-height: 2rem;
+  font-size: 0.875rem;
+  text-transform: none;
+
+  @media (min-width: 640px) {
+    padding: 0.25rem 0.875rem;
+    min-height: 2.25rem;
+    font-size: 0.875rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0.25rem 1rem;
+    min-height: 2.25rem;
+  }
+`;
+
 export const StyledButton = styled.button<{
   $themeMode: PrimaryButtonThemeMode;
   $variant: PrimaryButtonVariant;
+  $size: PrimaryButtonSize;
   $fullWidthOnMobile: boolean;
 }>`
   position: relative;
@@ -154,12 +216,21 @@ export const StyledButton = styled.button<{
     min-height: 3.25rem;
   }
 
+  ${(props) => props.$size === 'slim' && slimSize}
+
   ${(props) =>
     props.$variant === 'secondary'
       ? secondaryVariant
       : props.$variant === 'danger'
         ? dangerVariant
-        : themeStyles[props.$themeMode]}
+        : props.$variant === 'naked'
+          ? nakedVariant
+          : themeStyles[props.$themeMode]}
+
+  /* Pressed state for toggle buttons, from the source's \`active\` prop. */
+  &[aria-pressed='true'] {
+    filter: brightness(0.92);
+  }
 `;
 
 export const Content = styled.span<{ $loading: boolean }>`

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { PrimaryButton } from './PrimaryButton';
@@ -144,5 +144,78 @@ export const ResponsiveShowcase: Story = {
         </div>
       </div>
     </div>
+  ),
+};
+
+/**
+ * The `naked` variant, folded in from the source library's separate Button
+ * component: a text action with no chrome, for use inline beside copy.
+ */
+export const Naked: Story = {
+  render: (args) => (
+    <p style={{ color: 'var(--app-text)', maxWidth: '32rem' }}>
+      Shipping to United Kingdom.{' '}
+      <PrimaryButton {...args} variant="naked" fullWidthOnMobile={false}>
+        Change country
+      </PrimaryButton>
+    </p>
+  ),
+};
+
+/** `size="slim"` for toolbars and dense cards. */
+export const Slim: Story = {
+  render: (args) => (
+    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+      <PrimaryButton {...args} size="slim" fullWidthOnMobile={false}>
+        Slim
+      </PrimaryButton>
+      <PrimaryButton {...args} size="slim" variant="secondary" fullWidthOnMobile={false}>
+        Slim secondary
+      </PrimaryButton>
+      <PrimaryButton {...args} fullWidthOnMobile={false}>
+        Default size
+      </PrimaryButton>
+    </div>
+  ),
+};
+
+/** `active` marks a toggle button as on, via `aria-pressed`. */
+export const AsToggle: Story = {
+  render: (args) => {
+    const [view, setView] = useState<'grid' | 'list'>('grid');
+
+    return (
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <PrimaryButton
+          {...args}
+          size="slim"
+          variant="secondary"
+          fullWidthOnMobile={false}
+          active={view === 'grid'}
+          onClick={() => setView('grid')}
+        >
+          Grid
+        </PrimaryButton>
+        <PrimaryButton
+          {...args}
+          size="slim"
+          variant="secondary"
+          fullWidthOnMobile={false}
+          active={view === 'list'}
+          onClick={() => setView('list')}
+        >
+          List
+        </PrimaryButton>
+      </div>
+    );
+  },
+};
+
+/** `as="a"` for a link that looks like a button — no `type` or `disabled` emitted. */
+export const AsLink: Story = {
+  render: (args) => (
+    <PrimaryButton {...args} as="a" href="#checkout" fullWidthOnMobile={false}>
+      Proceed to checkout
+    </PrimaryButton>
   ),
 };

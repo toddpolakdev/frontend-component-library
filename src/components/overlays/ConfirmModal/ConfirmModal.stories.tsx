@@ -2,11 +2,11 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { PrimaryButton } from '../../inputs';
-import { ConfirmDialog } from './ConfirmDialog';
+import { ConfirmModal } from './ConfirmModal';
 
-const meta: Meta<typeof ConfirmDialog> = {
-  title: 'Components/ConfirmDialog',
-  component: ConfirmDialog,
+const meta: Meta<typeof ConfirmModal> = {
+  title: 'Components/ConfirmModal',
+  component: ConfirmModal,
   args: {
     isOpen: true,
     title: 'Delete contact?',
@@ -27,7 +27,7 @@ const meta: Meta<typeof ConfirmDialog> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof ConfirmDialog>;
+type Story = StoryObj<typeof ConfirmModal>;
 
 export const Danger: Story = {};
 
@@ -41,6 +41,10 @@ export const Default: Story = {
   },
 };
 
+/**
+ * Opened from a trigger. Because it's built on Modal, Escape cancels, focus
+ * starts on Cancel, Tab stays inside, and focus returns to the trigger on close.
+ */
 export const Interactive: Story = {
   render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +55,7 @@ export const Interactive: Story = {
           Open dialog
         </PrimaryButton>
 
-        <ConfirmDialog
+        <ConfirmModal
           {...args}
           isOpen={isOpen}
           onCancel={() => setIsOpen(false)}
